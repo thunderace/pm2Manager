@@ -6,6 +6,9 @@ angular.module('VcoApp.controllers', [])
             var appMem = 0;
             $scope.data = data;
 
+			var uptime = toHHMMSS($scope.data.system_info.uptime);
+			$scope.data.system_info.uptime = uptime;
+			
             var totalMem = $scope.data.monit.total_mem;
 
             angular.forEach(data.processes, function (v, k) {
@@ -25,3 +28,24 @@ angular.module('VcoApp.controllers', [])
             socket.removeAllListeners();
         })
     }])
+    
+function toHHMMSS(value) {
+	
+    var sec_num = parseInt(value, 10); // don't forget the second param
+	var days = Math.floor(sec_num / 86400);
+	sec_num -= days * 86400;
+	// calculate (and subtract) whole hours
+	var hours = Math.floor(sec_num / 3600) % 24;
+	sec_num -= hours * 3600;
+	// calculate (and subtract) whole minutes
+	var minutes = Math.floor(sec_num / 60) % 60;
+	sec_num -= minutes * 60;
+	// what's left is seconds
+	var seconds = sec_num;
+
+    if (hours   < 10) {hours   = "0"+hours;}
+    if (minutes < 10) {minutes = "0"+minutes;}
+    if (seconds < 10) {seconds = "0"+seconds;}
+    var time    = days + ' days, ' + hours+':'+minutes+':'+seconds;
+    return time;
+}

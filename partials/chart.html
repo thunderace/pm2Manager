@@ -1,54 +1,21 @@
 <div class="col-sm-12">
     <div class="row">
+        <h2 class="title">Server</h2>
         <div class="col-sm-4">
-        <h5 class="header">在线并发:</h5>
-   <div class="content time">{{data.member.length}}</div>
-        </div>
-
-        <div class="col-sm-4">
-            <h5 class="header">在线人数:</h5>
-            <div class="content time">{{data.online}}</div>
-        </div>
-
-        <div class="col-sm-4">
-            <h5 class="header">客户端信息:</h5>
-            <div class="content sf">
-                <p>ip {{data.client.ip}}</p>
-                <p>登陆时间 {{data.client.time}}</p>
-                <p>客户端 {{data.client.agent}}</p>
-            </div>
-        </div>
-
-    </div>
-</div>
-<div class="col-sm-12">
-    <div class="row">
-        <div class="col-sm-4">
-            <h5 class="header">服务器名称</h5>
-            <div class="content">{{data.system_info.hostname}}</div>
-            <h5 class="header">服务器运行时间</h5>
-            <div class="content">
-                <span class="time">
-                    {{data.system_info.uptime}}
-                             <span class="btn btn-primary btn-xs">s</span>
-                </span>
-            </div>
-            <h6 class="header">总内存</h6>
-            <div class="content">
-                  <span class="time">
-                {{data.monit.total_mem|size}}
-                      </span>
-            </div>
+            <h5 class="header">Hostname  <a class="content">{{data.system_info.hostname}}</a></h5>
+            
+            <h5 class="header">Uptime  <a class="content">{{data.system_info.uptime}}</a></h5>
+            <h5 class="header">Total memory <a class="content">{{data.monit.total_mem|size}}</a></h5>
         </div>
         <div class="col-sm-4">
-            <h6 class="header">可用内存: {{data.monit.free_mem|size}}</h6>
+            <h6 class="header">Free Memory {{data.monit.free_mem|size}}</h6>
             <span class="chart" easypiechart percent="Mempercent"
                   options="opt[0]">
                 <span class="percent" ng-bind="Mempercent"></span>
             </span>
         </div>
         <div class="col-sm-4">
-            <h6 class="header">应用程序 {{data.appMem|size}}</h6>
+            <h6 class="header">PM2 memory {{data.appMem|size}}</h6>
             <span class="chart" easypiechart percent="appMempercent"
                   options="opt[1]">
                 <span class="percent" ng-bind="appMempercent"></span>
@@ -56,32 +23,48 @@
         </div>
     </div>
 
-    <div class="row tablebox">
-        <h2 class="title">CPU</h2>
-        <table class="table">
-            <tr>
-                <th>CPU数量</th>
-                <th>参数</th>
-                <th>速度</th>
-                <th>效率</th>
-            </tr>
-            <tr ng-repeat="cpu in data.monit.cpu">
-                <td>{{data.monit.cpu.length}}</td>
-                <td>{{cpu.model}}</td>
-                <td>{{cpu.speed|number}}</td>
-                <td>
-                    <p>{{cpu.times.user|number}}</p>
-                    <p>{{cpu.times.nice|number}}</p>
-                    <p>{{cpu.times.sys|number}}</p>
-                    <p>{{cpu.times.idle|number}}</p>
-                    <p>{{cpu.times.irq|number}}</p>
-                </td>
-            </tr>
-        </table>
-    </div>
+	<div id="logModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+		  <div class="modal-content">
+		
+		    <div class="modal-header">
+		      <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+		      <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+		    </div>
+		    <div class="modal-body">
+		      <h4>Text in a modal</h4>
+		      <p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula.</p>
+		
+		      <h4>Popover in a modal</h4>
+		      <p>This <a href="#" role="button" class="btn btn-default popover-test" title="A Title" data-content="And here's some amazing content. It's very engaging. right?">button</a> should trigger a popover on click.</p>
+		
+		      <h4>Tooltips in a modal</h4>
+		      <p><a href="#" class="tooltip-test" title="Tooltip">This link</a> and <a href="#" class="tooltip-test" title="Tooltip">that link</a> should have tooltips on hover.</p>
+		
+		      <hr>
+		
+		      <h4>Overflowing text to show scroll behavior</h4>
+		      <p>Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p>
+		      <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.</p>
+		      <p>Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla.</p>
+		      <p>Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p>
+		      <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.</p>
+		      <p>Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla.</p>
+		      <p>Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p>
+		      <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.</p>
+		      <p>Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla.</p>
+		    </div>
+		    <div class="modal-footer">
+		      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		      <button type="button" class="btn btn-primary">Save changes</button>
+		    </div>
+		
+		  </div><!-- /.modal-content -->
+		</div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
 
     <div class="row">
-        <h2 class="title">网站进程</h2>
+        <h2 class="title">Nodes</h2>
         <div class="col-sm-3" ng-repeat="p in processes">
             <h6 class="header">{{p.pm2_env.name}}</h6>
             <span class="chart" easypiechart percent="p.memprecent"
@@ -90,43 +73,86 @@
             </span>
             <div>
                 <ul class="progressitem">
-                    <li><b>runtime</b>{{p.pm2_env.created_at|dgmdate:1}}</li>
+                    <li><b>last start</b>{{p.pm2_env.pm_uptime|date:'dd/MM/yyyy @ h:mm'}}</li>
                     <li><b>pid</b>{{p.pid}}</li>
                     <li><b>id</b>{{p.pm2_env.pm_id}}</li>
                     <li><b>status</b><span class="{{p.pm2_env.status|online}}">{{p.pm2_env.status}}</span></li>
+                    <li><b>restart</b>{{p.pm2_env.restart_time}}</li>
                     <li><b>mode</b>{{p.pm2_env.exec_mode}}</li>
                     <li><b>memory</b>{{p.monit.memory|size}}</li>
                     <li><b>cpu</b>{{p.monit.cpu}}</li>
-                    <li><b>path</b><a class="label label-default" title="{{p.pm2_env.pm_exec_path}}">路径</a></li>
+                    <li><b>exec path</b><a class="label label-default" title="{{p.pm2_env.pm_exec_path}}">show</a></li>
+                    <li><button type="button" data-target="#logModal" data-pm2id="{{p.pid}}" data-toggle="modal" class="btn btn-primary">Show Log</button></li>
                 </ul>
             </div>
         </div>
     </div>
 
     <div class="row tablebox">
-        <h2 class="title">网络参数</h2>
+        <h2 class="title">CPU</h2>
         <table class="table">
             <tr>
-                <th>名称</th>
-                <th>地址</th>
+                <th>CPU N°</th>
+                <th>Model</th>
+                <th>Current speed</th>
+                <th>Times</th>
+            </tr>
+            <tr ng-repeat="cpu in data.monit.cpu">
+                <td>{{$index + 1}}</td>
+                <td>{{cpu.model}}</td>
+                <td>{{cpu.speed|number}}</td>
+                <td>
+                    <p>user: {{cpu.times.user|number}}</p>
+                    <p>nice : {{cpu.times.nice|number}}</p>
+                    <p>sys: {{cpu.times.sys|number}}</p>
+                    <p>idle: {{cpu.times.idle|number}}</p>
+                    <p>irq: {{cpu.times.irq|number}}</p>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="row tablebox">
+        <h2 class="title">Network</h2>
+        <table class="table">
+            <tr>
+                <th>Name</th>
+                <th>ip</th>
                 <th>family</th>
                 <th>internal</th>
 
             </tr>
-            <tr>
-                <td>eth0</td>
-                <td>{{data.monit.interfaces.eth0[0].address}}</td>
-                <td>{{data.monit.interfaces.eth0[0].family}}</td>
-                <td>{{data.monit.interfaces.eth0[0].internal}}</td>
-            </tr>
-            <tr>
-                <td>eth1</td>
-                <td>{{data.monit.interfaces.eth1[0].address}}</td>
-                <td>{{data.monit.interfaces.eth1[0].family}}</td>
-                <td>{{data.monit.interfaces.eth1[0].internal}}</td>
+            <tr ng-repeat="(name,interface) in data.monit.interfaces">
+                <td>{{name}}</td>
+                <td>{{interface[0].address}}</td>
+                <td>{{interface[0].family}}</td>
+                <td>{{interface[0].internal}}</td>
             </tr>
         </table>
     </div>
 </div>
+<!--
+<div class="col-sm-12">
+    <div class="row">
+        <div class="col-sm-4">
+        <h5 class="header">Client id:{{data.member.length}}</h5>
+        </div>
+
+        <div class="col-sm-4">
+            <h5 class="header">Client online:</h5>
+            <div class="content time">{{data.online}}</div>
+        </div>
+
+        <div class="col-sm-4">
+            <h5 class="header">Client:</h5>
+            <div class="content sf">
+                <p>ip {{data.client.ip}}</p>
+                <p>time {{data.client.time}}</p>
+                <p>agent {{data.client.agent}}</p>
+            </div>
+        </div>
+
+    </div>
+</div>
+-->
 
 

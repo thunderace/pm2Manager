@@ -1,14 +1,22 @@
 {
-    "name": "Pm2-Watch",
-    "version": "0.3.2",
-    "description": "",
-    "keywords": ["Node.js", "AngularJS", "soket"],
-    "private": true,
-    "scripts": {
-        "start": "node app"
-    },
-    "dependencies": {
-        "socket.io": "*",
-        "request":"*"
-    }
+  "name": "pm2Manager",
+  "version": "0.0.1",
+  "description": "",
+  "keywords": [
+    "node.js",
+    "angularJS",
+    "socket.io",
+    "pm2",
+    "bootstrap"
+  ],
+  "private": false,
+  "scripts": {
+    "start": "node pm2Manager"
+  },
+  "dependencies": {
+    "pm2": "^0.11.1",
+    "pm2-interface": "^2.0.4",
+    "request": "*",
+    "socket.io": "*"
+  }
 }
