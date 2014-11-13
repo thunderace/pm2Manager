@@ -18,5 +18,9 @@
     "pm2-interface": "^2.0.4",
     "request": "*",
     "socket.io": "*"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/thunderace/pm2Manager.git"
+  } 
 }
