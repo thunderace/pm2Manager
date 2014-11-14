@@ -13,7 +13,7 @@ angular.module('tools', []).
 
         function union(a, b) {
             var type = checkType(a);
-
+           	console.log(b.name + " - " + checkType(b) + " - " + type);
             if (b === undefined) {
                 b = a;
                 a = type === 'object' ? {} : [];

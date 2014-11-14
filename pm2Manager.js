@@ -2,16 +2,18 @@ var url = require('url');
 var path = require('path');
 var fs = require('fs');
 var request = require('request');
+var config = require('./config');
 
-var httpPort = 3001;
 var pm2Host = '192.168.1.230';
 var pm2Port = 9615; 
 var pm2Url = 'http://' + pm2Host + ':' + pm2Port ;
 
-var app = require('http').createServer(handler).listen(httpPort);
-var io = require('socket.io').listen(app,{log:false});
-var Member = [],client = {},client_id=[],online=0,ips=[];
 
+var app = require('http').createServer(handler).listen(config.httpPort);
+
+var io = require('socket.io').listen(app,{log:false});
+
+var Member = [],client = {},client_id=[],online=0,ips=[];
 
 var basePath = path.dirname(process.argv[1]);
 
@@ -80,39 +82,51 @@ io.sockets.on('connection', function (socket) {
         Member.splice(client_id[socket.id],1);
     });
 
-
-    var setID = setInterval(function(){
-        getPM2(function(err,body){
-        	if (err == 0) {
-	            socket.emit('watchPm2',body);
-        	}
-        })
-    },2000);
+	var getPM2Callback = function(err, data) {
+    	if (err == 0) {
+        	socket.emit('watchPm2',data);
+    	}
+	};
 
 
-    var getPM2 = function(cb){
-        request({url:pm2Url, oauth:{}, json:true}, function (error, response, body) {
-            if (!error && response.statusCode == 200) {
-                body.member = Member;
-                body.client =Member[client_id[socket.id]];
-                body.online = online;
-                cb(0,body);
-            }else{
-                cb(1,error);
-            }
-        })
-    }
 
-    getPM2(function(e,body){
-        socket.emit('watchPm2',body);
-    })
+    var getPM2 = function(){
+    	var serverCount = config.pm2Servers.length;
+    	var counter = 0;
+    	var data = [];
+    	config.pm2Servers.forEach(function(server) {
+    		if (server.enable == undefined || server.enable == 1) {
+		        request({url:'http://' + server.ip + ':' + server.port, oauth:{}, json:true}, function (error, response, body) {
+		            if (!error && response.statusCode == 200) {
+		                body.member = Member;
+		                body.client = Member[client_id[socket.id]];
+		                body.online = online;
+		            	data.push(body);
+		            	counter++;
+	                	getPM2Callback(0,data);
+	/*
+						if (counter == serverCount) {
+		                	getPM2Callback(0,data);
+		            	}
+	*/	            	
+		            }else{
+		                // cb(1,error);
+		            }
+		        })
+    		}
+    	});
+    };
+
+    var setID = setInterval(getPM2,config.updateInterval);
+
+	getPM2(); // initial call
 
 });
 
 
 var getTime=function(){
     var date = new Date();
-    return date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
+    return date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
 }
 
-console.log('daemon started on http://localhost:'+httpPort);
+console.log('daemon started on http://localhost:' + config.httpPort);

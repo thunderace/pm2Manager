@@ -19,7 +19,6 @@ angular.module('VcoApp', ['ngRoute','VcoApp.controllers', 'VcoApp.services', 'Vc
             });
     }])
     .run(['$rootScope', '$route', '$http', function ($rootScope, $route, $http) {
-//        CW.url='http://192.168.1.230:9615';
         CW.socket=location.host;
         CW.scope = $rootScope;
 

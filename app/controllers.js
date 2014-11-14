@@ -1,8 +1,62 @@
 angular.module('VcoApp.controllers', [])
 
+	.controller('AccordionDemoCtrl', function ($scope) {
+	  $scope.oneAtATime = true;
+	
+	  $scope.groups = [
+	    {
+	      title: 'Dynamic Group Header - 1',
+	      content: 'Dynamic Group Body - 1'
+	    },
+	    {
+	      title: 'Dynamic Group Header - 2',
+	      content: 'Dynamic Group Body - 2'
+	    }
+	  ];
+	
+	  $scope.items = ['Item 1', 'Item 2', 'Item 3'];
+	
+	  $scope.addItem = function() {
+	    var newItemNo = $scope.items.length + 1;
+	    $scope.items.push('Item ' + newItemNo);
+	  };
+	
+	  $scope.status = {
+	    isFirstOpen: true,
+	    isFirstDisabled: false
+	  };
+	})
     .controller('ChartCtrl', ['$scope','socket','$filter','tools', function ($scope,socket,$filter,tools) {
-        $scope.processes = [];
+        $scope.processes = {};
+        $scope.pm2Servers = {};
         socket.on('watchPm2', function (data) {
+        	angular.forEach(data, function(server){
+	            var appMem = 0;
+				var uptime = toHHMMSS(server.system_info.uptime);
+				server.system_info.uptime = uptime;
+				
+	            var totalMem = server.monit.total_mem;
+	
+	            angular.forEach(server.processes, function (v, k) {
+	                appMem += parseInt(v.monit.memory);
+	                v.memprecent = $filter('itempercent')(v.monit.memory,totalMem);
+	                v.hostname = server.system_info.hostname;
+	                if (!$scope.processes[v.name + '-'+ v.hostname]) {
+	                	$scope.processes[v.name + '-'+ v.hostname] = {};
+	                }
+	                $scope.processes[v.name + '-'+ v.hostname] = v;
+	            });
+
+	            server.appMem = appMem;
+	            server.Mempercent = $filter('percent')(server.monit.free_mem,totalMem);
+	            server.appMempercent = $filter('itempercent')(server.appMem,totalMem);
+				if (!$scope.pm2Servers[server.system_info.hostname]) {
+					$scope.pm2Servers[server.system_info.hostname] = {};
+				}
+				$scope.pm2Servers[server.system_info.hostname] = server;
+
+	       	});
+/*        	
             var appMem = 0;
             $scope.data = data;
 
@@ -21,6 +75,7 @@ angular.module('VcoApp.controllers', [])
             $scope.data.appMem = appMem;
             $scope.Mempercent = $filter('percent')($scope.data.monit.free_mem,totalMem);
             $scope.appMempercent = $filter('itempercent')($scope.data.appMem,totalMem);
+*/
 
         });
 
