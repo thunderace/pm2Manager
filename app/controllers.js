@@ -40,11 +40,13 @@ angular.module('PM2Manager.controllers', [])
             socket.removeAllListeners();
         });
 
-        $scope.stop = function (pm2id) {
-			socket.emit('message', {command: 'stop', pm2id: pm2id});
-        };
-        $scope.start = function (pm2id) {
-			socket.emit('message', {command: 'start', pm2id: pm2id});
+        $scope.stopstart = function (status, pm2id) {
+        	console.log (pm2id);
+        	if (status == 'online') {
+				socket.emit('message', {command: 'stop', pm2id: pm2id});
+        	} else {
+				socket.emit('message', {command: 'start', pm2id: pm2id});
+        	}
         };
 
 		getServerEntry = function(hostname) {

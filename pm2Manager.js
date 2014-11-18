@@ -53,11 +53,13 @@ function handler (req, res) {
 	});
 }
 
-
-// first get hostnames from ip
-var setID = setInterval(getPM2,config.updateInterval);
-getPM2(); // initial call
-
+pm2.connect(function() {
+	// first get hostnames from ip
+	var setID = setInterval(getPM2,config.updateInterval);
+	getPM2(); // initial call
+	console.log('pm2Manager daemon started on http://localhost:' + config.httpPort);
+});
+	
 function getPM2() {
 	config.pm2Servers.forEach(function(server) {
 		if (server.enable == undefined || server.enable == 1) {
@@ -85,15 +87,25 @@ io.on('connection', function (socket) {
 	});
 
 	socket.on('message', function (data) {
-		console.log(data);
 		if (!data) {
 			return;
 		}
 		if (data.command == 'start') {
 			var pmid = data.pm2id;
-			// get current status
-	}
+			pm2.restart(data.pm2id, function(err, proc) {
+    			if (err) {
+    				console.log('start error');
+    			}
+			});
+		}
+		if (data.command == 'stop') {
+			var pmid = data.pm2id;
+			pm2.stop(data.pm2id, function(err, proc) {
+    			if (err) {
+    				console.log('stop error');
+    			}
+			});
+		}
 	});
 });
 
-console.log('pm2Manager daemon started on http://localhost:' + config.httpPort);

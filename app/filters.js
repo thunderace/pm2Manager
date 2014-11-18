@@ -34,6 +34,12 @@ angular.module('PM2Manager.filters', [])
             return (status == 'online') ? 'label label-success' : 'label label-danger';
         }
     }])
+    .filter('startstopLabel', [function () {
+        return function (status) {
+            return (status == 'online') ? 'Stop' : 'Start';
+        }
+    }])
+    
     .filter('progressStyle', [function () {
         return function (status, total) {
             if (status > 0 && total > 0) {
