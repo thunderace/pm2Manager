@@ -1,52 +1,39 @@
 angular.module('PM2Manager.controllers', [])
     .controller('ChartCtrl', ['$scope','socket','$filter','tools', function ($scope,socket,$filter,tools) {
-        $scope.processes = new Array();
-        $scope.pm2Servers = new Array();
+        $scope.processes = [];
+        $scope.pm2Servers = [];
         
         socket.on('server_down', function (ip) {
-        	removeServerEntry(ip);
-        	removeServerProcesses(ip);
-            	
+			removeServerEntry(ip);
+			removeServerProcesses(ip);
         });
         socket.on('error', function (data) {
-        	// remove all screen data
-        	$scope.processes = new Array();
-	        $scope.pm2Servers = new Array();
+			// remove all screen data
+			$scope.processes = [];
+			$scope.pm2Servers = [];
         });
 
         socket.on('watchPm2', function (server) {
-            var appMem = 0;
-			var uptime = toHHMMSS(server.system_info.uptime);
-			server.system_info.uptime = uptime;
-			
+			server.system_info.uptime = toHHMMSS(server.system_info.uptime);
             var totalMem = server.monit.total_mem;
-
+            var appMem = 0;
+            var oldServer = getServerEntry(server.system_info.hostname);
+            if (oldServer != null && oldServer.processes.length != server.processes.length) {
+				// not the same process count : remove all and again    
+				removeServerProcesses(server.system_info.ip);
+            }
             angular.forEach(server.processes, function (v, k) {
-                appMem += parseInt(v.monit.memory);
+                appMem += parseInt(v.monit.memory,10);
                 v.memprecent = $filter('itempercent')(v.monit.memory,totalMem);
                 v.hostname = server.system_info.hostname;
                 v.hostIP = server.system_info.ip;
                 v.pm_id = server.pm_id;
-                addOrUpdateProcessEntry(v);
-                /*
-                if (!$scope.processes[v.name + '-' + v.hostname  + '-' + server.pm_id]) {
-                	$scope.processes[v.name + '-' + v.hostname  + '-' + server.pm_id] = {};
-                }
-                
-                $scope.processes[v.name + '-' + v.hostname + '-' + server.pm_id] = v;
-                */
+				addOrUpdateProcessEntry(v);
             });
-
             server.appMem = appMem;
             server.Mempercent = $filter('percent')(server.monit.free_mem,totalMem);
             server.appMempercent = $filter('itempercent')(server.appMem,totalMem);
             addOrUpdateServerEntry(server);
-/*            
-			if (!$scope.pm2Servers[server.system_info.hostname]) {
-				$scope.pm2Servers[server.system_info.hostname] = {};
-			}
-			$scope.pm2Servers[server.system_info.hostname] = server;
-*/			
         });
 
         $scope.$on('$destroy', function (event) {
@@ -54,59 +41,55 @@ angular.module('PM2Manager.controllers', [])
         });
 
         $scope.stop = function (pm2id) {
-        	console.log(pm2id);
-        	socket.emit('message', {command: 'stop', pm2id: pm2id});
+			socket.emit('message', {command: 'stop', pm2id: pm2id});
         };
         $scope.start = function (pm2id) {
-        	console.log(pm2id);
-        	socket.emit('message', {command: 'start', pm2id: pm2id});
+			socket.emit('message', {command: 'start', pm2id: pm2id});
         };
 
+		getServerEntry = function(hostname) {
+			for (var index = 0; index < $scope.pm2Servers.length; index++) {
+				if ($scope.pm2Servers[index].system_info.hostname == hostname) {
+					return $scope.pm2Servers[index];
+				}
+			}
+			return null;
+		};
 		addOrUpdateServerEntry = function(server2Add) {
 			for (var index = 0; index < $scope.pm2Servers.length; index++) {
-		    	if ($scope.pm2Servers[index].system_info.hostname == server2Add.system_info.hostname) {
-		    		$scope.pm2Servers[index] = server2Add;
-		    		return;
-		    	}
-		    }
+				if ($scope.pm2Servers[index].system_info.hostname == server2Add.system_info.hostname) {
+					$scope.pm2Servers[index] = server2Add;
+					return;
+				}
+			}
 			$scope.pm2Servers.push(server2Add);
 		};
 		addOrUpdateProcessEntry = function(process2Add) {
 			for (var index = 0; index < $scope.processes.length; index++) {
-		    	if ($scope.processes[index].name == process2Add.name && $scope.processes[index].hostname == process2Add.hostname && $scope.processes[index].pm_id == process2Add.pm_id ){
-		    		$scope.processes[index] = process2Add;
-		    		return;
-		    	}
-		    }
+				if ($scope.processes[index].name == process2Add.name && $scope.processes[index].hostname == process2Add.hostname && $scope.processes[index].pm_id == process2Add.pm_id ){
+					$scope.processes[index] = process2Add;
+					return 0; // update
+				}
+			}
 			$scope.processes.push(process2Add);
+			return 1; // new entry
 		};
 		removeServerEntry = function(ip) {
 			for (var index = 0; index < $scope.pm2Servers.length; index++) {
-		    	if ($scope.pm2Servers[index].system_info.ip == ip) {
-		    		$scope.pm2Servers.splice(index, 1);
-		    		return;
-		    	}
-		    }
-		    console.log ('server to remove not found');
+				if ($scope.pm2Servers[index].system_info.ip == ip) {
+					$scope.pm2Servers.splice(index, 1);
+					return;
+				}
+			}
+			console.log ('server to remove not found');
 		};
 		removeServerProcesses = function(ip) {
-			for (var index = 0; index < $scope.processes.length; index++) {
-		    	if ($scope.processes[index].hostIP == ip ){
-		    		$scope.processes.splice(index, 1);
-		    	}
-		    }
+			for (var index = $scope.processes.length -1; index >= 0; index--) {
+				if ($scope.processes[index].hostIP == ip ){
+					$scope.processes.splice(index, 1);
+				}
+			}
 		};
-/*		
-		removeProcessesEntries = function(ip) {
-			for (var index = 0; index < $scope.pm2Servers.length; index++) {
-		    	if ($scope.pm2Servers[index].system_info.ip == ip) {
-		    		$scope.pm2Servers.splice(index, 1);
-		    		return;
-		    	}
-		    }
-		    console.log ('server to remove not found');
-		};
-*/
 }]);
     
 
