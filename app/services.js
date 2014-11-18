@@ -1,5 +1,4 @@
-angular.module('VcoApp.services', [])
-
+angular.module('PM2Manager.services', [])
     .factory('socket', function($rootScope) {
         var socket = io.connect(CW.socket);
         return {
@@ -10,6 +9,17 @@ angular.module('VcoApp.services', [])
                         callback.apply(socket, args);
                     });
                 });
-            }
+            },
+		    emit: function (eventName, data, callback) {
+		      socket.emit(eventName, data, function () {
+		        var args = arguments;
+		        $rootScope.$apply(function () {
+		          if (callback) {
+		            callback.apply(socket, args);
+		          }
+		        });
+		      })
+		    }            
         };
     })
+    

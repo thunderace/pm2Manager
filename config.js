@@ -2,18 +2,19 @@ module.exports = {
 	httpPort : 			3001,
 	updateInterval : 	5000, // in seconds
 	pm2Servers: [ {
-		name:			'debianServer',
-		ip: 			'192.168.1.230',
+		ip:			'192.168.1.230',   //debianserver
 		port: 			9615
 		} , {
-		name:			'domo1',
-		ip: 			'192.168.1.40',
+		ip:			'192.168.1.40', //domo1
 		port: 			9615
 		} , {
-		name:			'domo10',
-		ip: 			'192.168.1.120',
+		ip:			'192.168.1.190', // P5KE
 		port: 			9615,
-		enable:			0
+		enable:			1
+		}, {
+		ip:			'192.168.1.120', // domo10
+		port: 			9615,
+		enable:			1
 		}
 	]
 };

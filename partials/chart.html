@@ -19,7 +19,8 @@
                     <li><b>memory</b>{{p.monit.memory|size}}</li>
                     <li><b>cpu</b>{{p.monit.cpu}}</li>
                     <li><b>exec path</b><a class="label label-default" title="{{p.pm2_env.pm_exec_path}}">show</a></li>
-                    <li><button type="button" data-target="#logModal" data-pm2id="{{p.pid}}" data-toggle="modal" class="btn btn-primary">Show Log</button></li>
+                    <li><button type="button" ng-click="stop(p.pm_id)" class="btn btn-primary">Stop</button>
+                        <button type="button" ng-click="start(p.pm_id)" class="btn btn-primary">Start</button></li>
                 </ul>
             </div>
         </div>
@@ -29,9 +30,9 @@
 		<h2 class="title">Servers</h2>
     </div>
 		
-	<div ng-repeat="(name,server) in pm2Servers">
+	<div ng-repeat="server in pm2Servers" >
 		<div class="row">
-	        <h3 class="title">Hostname : {{name}}</h3>
+	        <h3 class="title" id="{{server.system_info.ip}}">Hostname : {{server.system_info.hostname}}</h3>
 	        <div class="col-sm-4">
 	            <h5 class="header">Uptime  <a class="content">{{server.system_info.uptime}}</a></h5>
 	            <h5 class="header">Total memory <a class="content">{{server.monit.total_mem|size}}</a></h5>
@@ -95,30 +96,3 @@
 	    </div>
 	</div>        
 </div>
-
-<!--
-<div class="col-sm-12">
-    <div class="row">
-        <div class="col-sm-4">
-        <h5 class="header">Client id:{{data.member.length}}</h5>
-        </div>
-
-        <div class="col-sm-4">
-            <h5 class="header">Client online:</h5>
-            <div class="content time">{{data.online}}</div>
-        </div>
-
-        <div class="col-sm-4">
-            <h5 class="header">Client:</h5>
-            <div class="content sf">
-                <p>ip {{data.client.ip}}</p>
-                <p>time {{data.client.time}}</p>
-                <p>agent {{data.client.agent}}</p>
-            </div>
-        </div>
-
-    </div>
-</div>
--->
-
-

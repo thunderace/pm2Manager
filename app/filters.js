@@ -1,5 +1,4 @@
-angular.module('VcoApp.filters', [])
-
+angular.module('PM2Manager.filters', [])
     .filter('size', [function () {
         return function (num) {
             if (num > 1000000000){

@@ -1,3 +1,4 @@
+'use strict';
 var CW = {};
 
 angular.module('ie7support', []).config(function($sceProvider) {
@@ -6,7 +7,7 @@ angular.module('ie7support', []).config(function($sceProvider) {
 });
 
 
-angular.module('VcoApp', ['ngRoute','VcoApp.controllers', 'VcoApp.services', 'VcoApp.filters','VcoApp.directive','easypiechart','tools'])
+angular.module('PM2Manager', ['ngRoute','PM2Manager.controllers', 'PM2Manager.services', 'PM2Manager.filters','PM2Manager.directive','easypiechart','tools'])
     .config(['$routeProvider', function ($routeProvider) {
         $routeProvider
 
@@ -31,4 +32,4 @@ angular.module('VcoApp', ['ngRoute','VcoApp.controllers', 'VcoApp.services', 'Vc
 
     }]);
 
-angular.bootstrap(document, ['VcoApp']);
+angular.bootstrap(document, ['PM2Manager']);

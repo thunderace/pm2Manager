@@ -3,20 +3,13 @@ var path = require('path');
 var fs = require('fs');
 var request = require('request');
 var config = require('./config');
-
-var pm2Host = '192.168.1.230';
-var pm2Port = 9615; 
-var pm2Url = 'http://' + pm2Host + ':' + pm2Port ;
-
+var pm2 = require('pm2');
 
 var app = require('http').createServer(handler).listen(config.httpPort);
-
 var io = require('socket.io').listen(app,{log:false});
 
-var Member = [],client = {},client_id=[],online=0,ips=[];
-
 var basePath = path.dirname(process.argv[1]);
-
+var serverStatus = {};
 // Serve the index.html page
 function handler (req, res) {
 	var uri = url.parse(req.url).pathname;
@@ -61,72 +54,46 @@ function handler (req, res) {
 }
 
 
-io.sockets.on('connection', function (socket) {
-    client = {
-        time:getTime(),
-        ip:socket.handshake.address.address,
-        port:socket.handshake.address.port,
-        sid:socket.id,
-        agent:socket.handshake.headers['user-agent']
-    };
-    client_id[socket.id]=Member.length;
-    if(!ips[client.ip]){
-        ips[client.ip]=true;
-        online++;
-    }
+// first get hostnames from ip
+var setID = setInterval(getPM2,config.updateInterval);
+getPM2(); // initial call
 
-    Member.push(client);
-
-    socket.on('disconnect', function () {
-        clearInterval('setID');
-        Member.splice(client_id[socket.id],1);
-    });
-
-	var getPM2Callback = function(err, data) {
-    	if (err == 0) {
-        	socket.emit('watchPm2',data);
-    	}
-	};
-
-
-
-    var getPM2 = function(){
-    	var serverCount = config.pm2Servers.length;
-    	var counter = 0;
-    	var data = [];
-    	config.pm2Servers.forEach(function(server) {
-    		if (server.enable == undefined || server.enable == 1) {
-		        request({url:'http://' + server.ip + ':' + server.port, oauth:{}, json:true}, function (error, response, body) {
-		            if (!error && response.statusCode == 200) {
-		                body.member = Member;
-		                body.client = Member[client_id[socket.id]];
-		                body.online = online;
-		            	data.push(body);
-		            	counter++;
-	                	getPM2Callback(0,data);
-	/*
-						if (counter == serverCount) {
-		                	getPM2Callback(0,data);
-		            	}
-	*/	            	
-		            }else{
-		                // cb(1,error);
-		            }
-		        })
-    		}
-    	});
-    };
-
-    var setID = setInterval(getPM2,config.updateInterval);
-
-	getPM2(); // initial call
-
-});
-
-
-var getTime=function(){
-    var date = new Date();
-    return date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+function getPM2() {
+	config.pm2Servers.forEach(function(server) {
+		if (server.enable == undefined || server.enable == 1) {
+			if (!serverStatus[server.ip]) {
+				serverStatus[server.ip] = 0;
+			}
+			request({url:'http://' + server.ip + ':' + server.port, oauth:{}, json:true}, function (error, response, data) {
+				if (!error && response.statusCode == 200) {
+					serverStatus[server.ip] = 1;
+					data.system_info.ip = server.ip;
+					io.emit('watchPm2',data);
+				} else {
+					if (serverStatus[server.ip] == 1) {
+						io.emit('server_down',server.ip);
+					}
+					serverStatus[server.ip] = 0;
+				}
+			});
+		}
+	});
 }
 
-console.log('daemon started on http://localhost:' + config.httpPort);
+io.on('connection', function (socket) {
+	socket.on('disconnect', function () {
+	});
+
+	socket.on('message', function (data) {
+		console.log(data);
+		if (!data) {
+			return;
+		}
+		if (data.command == 'start') {
+			var pmid = data.pm2id;
+			// get current status
+	}
+	});
+});
+
+console.log('pm2Manager daemon started on http://localhost:' + config.httpPort);
