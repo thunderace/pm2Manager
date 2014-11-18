@@ -1,4 +1,4 @@
-#pm2Manager version 0.0.1
+#pm2Manager version 0.0.2
 fork of pm2Manage from KenZR 
 
 
