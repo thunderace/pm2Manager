@@ -2,7 +2,7 @@
 fork of pm2Manage from KenZR 
 
 
-![pm2Manage](https://raw.githubusercontent.com/thunderace/pm2Manage/master/snapshots/snapshot-v0.0.1.png)
+![pm2Manage](https://raw.githubusercontent.com/thunderace/pm2Manager/master/snapshots/snapshot-v0.0.2.png)
 
 How to :
 + clone repo : git clone https://github.com/thunderace/pm2Manage.git
