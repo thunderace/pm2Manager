@@ -28,6 +28,7 @@ angular.module('PM2Manager.controllers', [])
                 v.hostname = server.system_info.hostname;
                 v.hostIP = server.system_info.ip;
                 v.pm_id = server.pm_id;
+                v.stopStart = server.system_info.extHttpInterface;
 				addOrUpdateProcessEntry(v);
             });
             server.appMem = appMem;
@@ -40,12 +41,12 @@ angular.module('PM2Manager.controllers', [])
             socket.removeAllListeners();
         });
 
-        $scope.stopstart = function (status, pm2id) {
+        $scope.stopstart = function (status, pm2id, hostIP) {
         	console.log (pm2id);
         	if (status == 'online') {
-				socket.emit('message', {command: 'stop', pm2id: pm2id});
+				socket.emit('message', {command: 'stop', pm2id: pm2id, ip: hostIP});
         	} else {
-				socket.emit('message', {command: 'start', pm2id: pm2id});
+				socket.emit('message', {command: 'restart', pm2id: pm2id, ip: hostIP});
         	}
         };
 
