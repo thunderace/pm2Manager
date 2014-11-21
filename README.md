@@ -1,4 +1,4 @@
-#pm2Manager version 0.0.2
+#pm2Manager version 0.0.3
 Based on pm2Manage from KenZR 
 
 How to :
@@ -13,4 +13,3 @@ How to :
 If you want to use the start/stop feature, please install and run [pm2-extended-http-interface](https://github.com/thunderace/pm2-extended-http-interface) 
 ![pm2Manage](https://raw.githubusercontent.com/thunderace/pm2Manager/master/snapshots/snapshot.png)
 
-Version 0.0.3
