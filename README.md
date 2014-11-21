@@ -11,5 +11,6 @@ How to :
 + enjoy : open your browser to localhost:yourport
 
 If you want to use the start/stop feature, please install and run [pm2-extended-http-interface](https://github.com/thunderace/pm2-extended-http-interface) 
-![pm2Manage](https://raw.githubusercontent.com/thunderace/pm2Manager/master/snapshots/snapshot-v0.0.2.png)
+![pm2Manage](https://raw.githubusercontent.com/thunderace/pm2Manager/master/snapshots/snapshot.png)
 
+Version 0.0.3

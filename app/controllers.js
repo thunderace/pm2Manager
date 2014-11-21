@@ -41,13 +41,15 @@ angular.module('PM2Manager.controllers', [])
             socket.removeAllListeners();
         });
 
-        $scope.stopstart = function (status, pm2id, hostIP) {
-        	console.log (pm2id);
+        $scope.stopstart = function (status, pm2id, hostIP, e) {
         	if (status == 'online') {
 				socket.emit('message', {command: 'stop', pm2id: pm2id, ip: hostIP});
         	} else {
 				socket.emit('message', {command: 'restart', pm2id: pm2id, ip: hostIP});
         	}
+			// disable button
+			var element = angular.element(e.srcElement);
+			element.attr("disabled", "disabled");
         };
 
 		getServerEntry = function(hostname) {

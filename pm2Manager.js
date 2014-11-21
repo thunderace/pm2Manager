@@ -55,13 +55,14 @@ function handler (req, res) {
 
 console.log('pm2Manager daemon started on http://localhost:' + config.httpPort);
 	
-function getPM2() {
+function init() {
 	config.pm2Servers.forEach(function(server) {
 		if (server.enable == undefined || server.enable == 1) {
 			if (!serverStatus[server.ip]) {
 				serverStatus[server.ip] = {};
 				serverStatus[server.ip].online = 0;
 				serverStatus[server.ip].port = server.port;
+				serverStatus[server.ip].extHttpInterface = 0;
 				// get the http interface version
 				request({url:'http://' + server.ip + ':' + server.port + '/version', oauth:{}, json:true}, function (error, response, data) {
 					if (!error && response.statusCode == 200) {
@@ -73,6 +74,13 @@ function getPM2() {
 					}
 				});
 			}
+		}
+	});
+}	
+	
+function getPM2() {
+	config.pm2Servers.forEach(function(server) {
+		if (server.enable == undefined || server.enable == 1) {
 			request({url:'http://' + server.ip + ':' + server.port, oauth:{}, json:true}, function (error, response, data) {
 				if (!error && response.statusCode == 200) {
 					serverStatus[server.ip].online = 1;
@@ -90,8 +98,10 @@ function getPM2() {
 	});
 }
 
+
 var clients = 0;
 var intervalID;
+init();
 io.on('connection', function (socket) {
 	if (clients == 0) {
 		intervalID = setInterval(getPM2,config.updateInterval);
@@ -109,15 +119,23 @@ io.on('connection', function (socket) {
 		if (!data) {
 			return;
 		}
+		if (!data.command || !data.ip) {
+			console.log('Invalid command : ' + data);
+			return;
+		}
 		if (data.command == 'restart' || data.command == 'stop') {
+			var pm_id = data.pm2id;
+			var ip = data.ip;
+			if (!serverStatus[ip]) {
+				console.log('Unknown server ' + ip);
+				return;
+			}
 			if (!serverStatus[ip].extHttpInterface ||  serverStatus[ip].extHttpInterface == 0) {
 				return;
 			}
-			var pm_id = data.pm2id;
-			var ip = data.ip;
-			request({url:'http://' + ip + ':' + serverStatus[ip].port + '/'+ data.command + '?pm_id=' + pm_id, oauth:{}, json:true}, function (error, response, data) {
+			request({url:'http://' + ip + ':' + serverStatus[ip].port + '/'+ data.command + '?pm_id=' + pm_id, oauth:{}, json:true}, function (error, response, d) {
 			if (!error && response.statusCode == 200) {
-				console.log(data);
+				// console.log(d);
 			} else {
 				console.log('error ' + error );
 			}

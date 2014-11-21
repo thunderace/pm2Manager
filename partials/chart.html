@@ -19,7 +19,7 @@
                     <li><b>memory</b>{{p.monit.memory|size}}</li>
                     <li><b>cpu</b>{{p.monit.cpu}}</li>
                     <li><b>exec path</b><a class="label label-default" title="{{p.pm2_env.pm_exec_path}}">show</a></li>
-                    <li><button ng-disabled="p.stopStart == 0" type="button" ng-click="stopstart(p.pm2_env.status, p.pm2_env.pm_id, p.hostIP)" class="btn btn-primary">{{p.pm2_env.status|startstopLabel}}</button></li>
+                    <li><button ng-disabled="p.stopStart == 0" type="button" ng-click="stopstart(p.pm2_env.status, p.pm2_env.pm_id, p.hostIP, $event)" class="btn btn-primary">{{p.pm2_env.status|startstopLabel}}</button></li>
                 </ul>
             </div>
         </div>
